@@ -1,5 +1,5 @@
 TypeScript Summary:
-AST Parsed     : 4290/4861 (88.25%)
+AST Parsed     : 4293/4865 (88.24%)
 Expect to Parse: "async/es2017/asyncArrowFunction/asyncArrowFunction6_es2017.ts"
 Expect to Parse: "async/es2017/asyncArrowFunction/asyncArrowFunction7_es2017.ts"
 Expect to Parse: "async/es2017/asyncArrowFunction/asyncArrowFunction8_es2017.ts"
@@ -72,6 +72,7 @@ Expect to Parse: "classes/members/privateNames/privateNamesNotAllowedInVariableD
 Expect to Parse: "classes/members/privateNames/privateNamesUnique-3.ts"
 Expect to Parse: "classes/nestedClassDeclaration.ts"
 Expect to Parse: "classes/propertyMemberDeclarations/autoAccessor1.ts"
+Expect to Parse: "classes/propertyMemberDeclarations/autoAccessor11.ts"
 Expect to Parse: "classes/propertyMemberDeclarations/autoAccessor2.ts"
 Expect to Parse: "classes/propertyMemberDeclarations/autoAccessor3.ts"
 Expect to Parse: "classes/propertyMemberDeclarations/autoAccessor4.ts"
