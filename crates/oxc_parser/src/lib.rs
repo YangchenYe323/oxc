@@ -24,6 +24,8 @@ use crate::{
     state::ParserState,
 };
 
+pub use lexer::generate_keyword_table;
+
 #[derive(Debug)]
 pub struct ParserReturn<'a> {
     pub program: Program<'a>,

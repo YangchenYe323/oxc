@@ -6,6 +6,7 @@
 //!     * [v8](https://v8.dev/blog/scanner)
 
 mod constants;
+mod keyword;
 mod kind;
 mod number;
 mod simd;
@@ -21,6 +22,7 @@ use oxc_diagnostics::{Diagnostics, Error};
 use simd::{SkipMultilineComment, SkipWhitespace};
 pub use token::{RegExp, Token, TokenValue};
 
+pub use self::keyword::generate_keyword_table;
 pub use self::kind::Kind;
 use self::{
     constants::{
