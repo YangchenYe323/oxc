@@ -28,9 +28,12 @@ pub struct SemanticBuilder<'a> {
     errors: Vec<Error>,
 
     // states
+    pub root_node_id: AstNodeId,
     pub current_node_id: AstNodeId,
     pub current_node_flags: NodeFlags,
     pub current_symbol_flags: SymbolFlags,
+    /// Monotonously increasing node index for fast descendent look up
+    pub current_node_index: u32,
 
     // builders
     pub nodes: AstNodes<'a>,
@@ -50,16 +53,19 @@ impl<'a> SemanticBuilder<'a> {
         let scope = ScopeBuilder::new(source_type);
         let mut nodes = AstNodes::default();
         let semantic_node =
-            SemanticNode::new(AstKind::Root, scope.current_scope_id, NodeFlags::empty());
+            SemanticNode::new(AstKind::Root, scope.current_scope_id, NodeFlags::empty(), 0);
+
         let current_node_id = nodes.new_node(semantic_node).into();
         Self {
             source_text,
             source_type,
             trivias: Rc::clone(trivias),
             errors: vec![],
+            root_node_id: current_node_id,
             current_node_id,
             current_node_flags: NodeFlags::empty(),
             current_symbol_flags: SymbolFlags::empty(),
+            current_node_index: 1,
             nodes,
             scope,
             symbols: SymbolTable::default(),
@@ -75,6 +81,9 @@ impl<'a> SemanticBuilder<'a> {
     pub fn build(mut self, program: &'a Program<'a>) -> SemanticBuilderReturn<'a> {
         // First AST pass
         self.visit_program(program);
+
+        let root_node = &mut self.nodes[self.root_node_id];
+        root_node.last_child_index(self.current_node_index);
 
         // Second partial AST pass on top level import / export statements
         let module_record = self.module_record_builder.build(program);
@@ -107,14 +116,22 @@ impl<'a> SemanticBuilder<'a> {
     }
 
     fn create_ast_node(&mut self, kind: AstKind<'a>) {
-        let ast_node =
-            SemanticNode::new(kind, self.scope.current_scope_id, self.current_node_flags);
+        let ast_node = SemanticNode::new(
+            kind,
+            self.scope.current_scope_id,
+            self.current_node_flags,
+            self.current_node_index,
+        );
+        self.current_node_index += 1;
         let node_id = self.current_node_id.append_value(ast_node, &mut self.nodes);
 
         self.current_node_id = node_id.into();
     }
 
     fn pop_ast_node(&mut self) {
+        // We are leaving this AST Node, which means we have visited all its children and
+        // current_node_index points to the last of them
+        self.nodes[self.current_node_id].last_child_index(self.current_node_index);
         self.current_node_id =
             self.nodes[self.current_node_id.indextree_id()].parent().unwrap().into();
     }

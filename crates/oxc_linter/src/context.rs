@@ -108,6 +108,11 @@ impl<'a> LintContext<'a> {
     }
 
     #[must_use]
+    pub fn node_id(&self, node: &AstNode<'a>) -> NodeId {
+        self.nodes().get_node_id(node).unwrap()
+    }
+
+    #[must_use]
     pub fn ancestors(&self, node: &AstNode<'a>) -> Ancestors<'_, SemanticNode<'a>> {
         let node_id = self.nodes().get_node_id(node).unwrap();
         node_id.ancestors(self.nodes())
